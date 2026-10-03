@@ -3,7 +3,7 @@
   "manifest_version": 1,
   "id": "io.github.kute.mysql-mock-data",
   "name": "MySQL Mock Data",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "kute",
   "description": "Generate MySQL INSERT statements from table metadata.",
   "icon": "assets/plugin.svg",
