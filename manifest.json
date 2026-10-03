@@ -1,0 +1,70 @@
+{
+  "$schema": "https://raw.githubusercontent.com/t8y2/dbx/plugin-sdk-v1/plugins/manifest.schema.json",
+  "manifest_version": 1,
+  "id": "io.github.kute.mysql-mock-data",
+  "name": "MySQL Mock Data",
+  "version": "0.0.1",
+  "publisher": "kute",
+  "description": "Generate MySQL INSERT statements from table metadata.",
+  "icon": "assets/plugin.svg",
+  "engines": { "dbx": ">=0.6.26", "host_api": "1" },
+  "permissions": ["host.workbench", "host.data:read"],
+  "entrypoints": {
+    "ui": { "root": "ui", "entry": "ui/index.html" },
+    "backend": { "protocol_versions": [1], "transport": "stdio-jsonl", "executable": "bin/mysql-mock-data-sidecar" }
+  },
+  "contributions": [
+    {
+      "type": "context-menu",
+      "id": "io.github.kute.mysql-mock-data.select-table",
+      "label": "选择 MySQL 库表并生成 Mock 数据",
+      "menu": "connection",
+      "action": {
+        "type": "open-workbench",
+        "workbench": "io.github.kute.mysql-mock-data.workbench"
+      }
+    },
+    {
+      "type": "context-menu",
+      "id": "io.github.kute.mysql-mock-data.generate",
+      "label": "Generate mock INSERT SQL",
+      "menu": "table",
+      "action": {
+        "type": "open-workbench",
+        "workbench": "io.github.kute.mysql-mock-data.workbench"
+      }
+    },
+    {
+      "type": "workbench",
+      "id": "io.github.kute.mysql-mock-data.workbench",
+      "label": "MySQL Mock Data",
+      "description": "Svelte workbench contributed by MySQL Mock Data.",
+      "icon": "assets/plugin.svg"
+    },
+    {
+      "type": "mcp",
+      "id": "io.github.kute.mysql-mock-data.mcp",
+      "description": "Generate MySQL INSERT SQL from a supplied table schema. Actual inserts use DBX's own MCP query tool and permissions.",
+      "ai_tools": true,
+      "external_tools": true
+    }
+  ],
+  "localizations": {
+    "zh-CN": {
+      "name": "MySQL Mock Data",
+      "description": "Generate MySQL INSERT statements from table metadata.",
+      "contributions": {
+        "io.github.kute.mysql-mock-data.select-table": {
+          "label": "选择 MySQL 库表并生成 Mock 数据"
+        },
+        "io.github.kute.mysql-mock-data.generate": {
+          "label": "生成 Mock INSERT SQL"
+        },
+        "io.github.kute.mysql-mock-data.workbench": {
+          "label": "MySQL Mock Data",
+          "description": "由插件提供的 Svelte 沙箱工作台。"
+        }
+      }
+    }
+  }
+}
