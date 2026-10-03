@@ -42,6 +42,7 @@
     { id: "seed-sql", name: "seed-sql", kind: "cli-limited", description: "Gemini AI 生成并直接写入 MySQL；需初始化独立配置，按其交互流程选择表。没有 SQL 导出或文档化行数参数。", install: "npm install --global seed-sql", source: "https://www.npmjs.com/package/seed-sql" },
     { id: "mysql-seed-generator", name: "mysql-seed-generator", kind: "node-api", description: "Node.js API，可按当前表结构及字段映射生成指定条数数据；插件预览区提供可运行脚本。", install: "npm install mysql-seed-generator", source: "https://www.npmjs.com/package/mysql-seed-generator" },
     { id: "go-test-my-db", name: "go-test-my-db", kind: "cli", description: "Go MySQL seeder，支持按 --table 限定当前表、指定行数，并提供 --dry-run 预览。", install: "go install github.com/tomfevang/go-test-my-db@latest", source: "https://github.com/tomfevang/go-test-my-db" },
+    { id: "mysql-dummy-populator", name: "mysql-dummy-populator", kind: "cli-limited", description: "Python/Faker 工具；分析外键依赖并按正确顺序为数据库中每张表直接造数。条数按每张表计算，不支持只选当前表。", install: "python -m pip install mysql-dummy-populator", source: "https://github.com/vitebski/mysql-dummy-populator" },
     { id: "dev-toolbox", name: "DevToolbox Database Seed Generator", kind: "web", description: "浏览器端生成 MySQL INSERT、JSON 或 CSV；粘贴建表 DDL 即可使用，不需要安装。", install: "打开在线工具，无需安装。最多生成 1000 行；工具说明数据仅在浏览器本地处理。", source: "https://www.dev-toolbox.tech/tools/database-seed-generator" }
   ];
   $: selectedGenerator = generators.find((item) => item.id === generatorId) ?? generators[0];
@@ -80,6 +81,9 @@
     }
     if (generator.id === "seed-sql") {
       return `${generator.install}\ncd <你的项目目录>\nseed-sql --init  # 按提示配置 Gemini key 和 MySQL 连接，生成 .seed-sql.config.json\nseed-sql --status\nseed-sql --tables\nseed-sql --generate --prompt ${shellQuote(`仅为 ${database}.${tableName} 生成符合业务语义的测试数据；请生成约 ${count} 条。`)}\n\n# 注意：文档未提供行数参数或 SQL/CSV 导出；--generate 会直接写入配置库，请先确认配置和工具的交互选择。`;
+    }
+    if (generator.id === "mysql-dummy-populator") {
+      return `${generator.install}\n\n${mysqlEnvironment()}\n\n# 可先分析该数据库的表、外键依赖和推荐插入顺序；此命令不写入数据\nmysql-dummy-populator --analyze-only\n\n# 每张表生成 ${count} 条并直接写入数据库 ${database}\nmysql-dummy-populator --records ${count} --locale en_US\n\n# 范围提醒：该工具没有单表筛选参数；它会遍历此数据库的多张表，所选表 ${tableName} 不会限制其写入范围。请确认目标库适合整体造数。`;
     }
     if (generator.id === "go-test-my-db") {
       const dsn = `\${MYSQL_USER}:\${MYSQL_PASSWORD}@tcp(\${MYSQL_HOST}:\${MYSQL_PORT})/${database}`;
